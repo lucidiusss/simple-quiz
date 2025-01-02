@@ -77,19 +77,21 @@ function App() {
 
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center">
-      <div className="flex items-center justify-center">
+      <div className="absolute top-0 left-0">
         Streak: {streak} 🔥 guessed in a row
       </div>
       <div className="w-full h-full flex items-center justify-center">
         {quiz && (
-          <div className="w-1/2 h-1/2 flex flex-col items-center shadow-xl border-2 p-4 border-[#e9e9e9] bg-[#f4f4f5] rounded-xl">
-            <h1 className="text-2xl text-[#111]">{quiz.question}</h1>
-            <div className="flex flex-col items-center gap-5 h-full w-full justify-center">
+          <div className="w-full md:w-1/2 h-full md:h-1/2 flex flex-col text-center items-center shadow-xl border-2 p-4 border-[#e9e9e9] bg-[#f4f4f5] rounded-xl">
+            <h1 className="md:text-2xl text-lg mt-16 md:mt-0 text-[#111]">
+              {quiz.question}
+            </h1>
+            <div className="flex flex-col items-center gap-5 mt-32 w-full justify-center">
               {answers.map((answer) => (
                 <Button
                   onClick={() => setNewQuiz(answer)}
                   key={answer}
-                  className="text-xl rounded-xl"
+                  className="text-sm md:text-xl rounded-xl max-w-72"
                   variant={"outline"}
                 >
                   {answer}
