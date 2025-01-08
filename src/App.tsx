@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./index.css";
 import axios from "axios";
-import { Button, buttonVariants } from "./components/ui/button";
+import { Button } from "./components/ui/button";
 import toast from "react-hot-toast";
 
 interface QuizProps {
