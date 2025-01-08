@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./index.css";
 import axios from "axios";
-import { Button } from "./components/ui/button";
+import { Button, buttonVariants } from "./components/ui/button";
 import toast from "react-hot-toast";
 
 interface QuizProps {
@@ -22,6 +22,7 @@ function App() {
   const [quiz, setQuiz] = useState<QuizProps>();
   const [answers, setAnswers] = useState<string[]>([]);
   const [streak, setStreak] = useState<number>(0);
+  const [retries, setRetries] = useState<number>(3);
 
   const fetchQuizes = async () => {
     try {
@@ -52,9 +53,8 @@ function App() {
       ]);
       setAnswers(shuffleArray(newAnswers));
       setStreak(streak + 1);
-      toast.success("Well done!");
     } else {
-      toast.error("Your answer is wrong.");
+      setRetries(retries - 1);
       setStreak(0);
     }
   };
@@ -75,31 +75,44 @@ function App() {
     fetchQuizes();
   }, []);
 
+  useEffect(() => {
+    if (quizes.length === 0) {
+      fetchQuizes()  
+    }
+  }, [quizes]);
+
+  useEffect(() => {
+    if (retries === 0) {
+      toast.error("you have failed!")
+    }
+  }, [retries])
+
+
+  const retryFn = () => {
+    setRetries(3);
+    fetchQuizes();
+  }
+
   return (
-    <div className="w-full h-screen flex flex-col justify-center items-center">
-      <div className="absolute top-0 left-0">
-        Streak: {streak} 🔥 guessed in a row
+    <div className="w-full h-screen flex flex-col items-center">
+      <div className="mt-36">
+        <p className="font-bold text-xl">Current score <span className="text-[#4c4c50]">{streak}</span></p>
+        <p className="font-bold text-xl">Total questions <span className="text-[#4c4c50]">{quizes.length}</span></p>
+        <p className="font-bold text-xl">Retries left <span className={`${retries === 3 ? "text-[#4c4c50]" : retries === 2 ? "text-orange-600" : "text-red-600"}`}>{retries}</span></p>
       </div>
-      <div className="w-full h-full flex items-center justify-center">
-        {quiz && (
-          <div className="w-full md:w-1/2 h-full md:h-1/2 flex flex-col text-center items-center shadow-xl border-2 p-4 border-[#e9e9e9] bg-[#f4f4f5] rounded-xl">
-            <h1 className="md:text-2xl text-lg mt-16 md:mt-0 text-[#111]">
-              {quiz.question}
-            </h1>
-            <div className="flex flex-col items-center gap-5 mt-32 w-full justify-center">
-              {answers.map((answer) => (
-                <Button
-                  onClick={() => setNewQuiz(answer)}
-                  key={answer}
-                  className="text-sm md:text-xl rounded-xl max-w-72"
-                  variant={"outline"}
-                >
-                  {answer}
-                </Button>
-              ))}
-            </div>
+        <h1 className="text-3xl font-bold mt-32">{quiz?.question}</h1>
+      <div className="flex flex-col gap-5 items-center w-[1280px] mt-16">
+        {
+          retries > 0 && answers && answers.map((answer) => <div>
+            <Button variant={"outline"} onClick={() => setNewQuiz(answer)} className="">{answer}</Button>
+          </div>)
+        }
+        {
+          retries === 0 && 
+          <div className="mx-auto">
+          <Button variant="default" className="bg-[#3a3a3a] font-bold" onClick={retryFn}>Try again</Button>
           </div>
-        )}
+        }
       </div>
     </div>
   );
